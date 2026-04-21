@@ -1,60 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SMOKIN INK TATTOOS</title>
-<style>
-body{background:#050b07;color:#67ff4e;font-family:sans-serif;text-align:center}
-input,select,textarea{width:90%;padding:10px;margin:8px;border-radius:10px;border:none}
-button{padding:12px 20px;background:#67ff4e;border:none;font-weight:bold;border-radius:20px}
-img{max-width:250px}
-.gallery img{width:100%;max-width:200px;margin:10px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMOKIN INK TATTOOS</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#050b07;color:#67ff4e;text-align:center;padding:20px}
+    .wrap{max-width:700px;margin:0 auto}
+    input,select,textarea{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none;box-sizing:border-box}
+    button{padding:14px 24px;background:#67ff4e;color:#000;border:none;border-radius:24px;font-weight:bold;cursor:pointer}
+    .notice{margin-top:14px;padding:12px;border-radius:10px;display:none}
+    .ok{background:#14351c;color:#9cff8a}
+    .err{background:#3a1414;color:#ffb5b5}
+    img{max-width:260px;width:100%;display:block;margin:0 auto 18px}
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <img src="smokin-ink-logo.jpeg" alt="SMOKIN INK TATTOOS logo">
+    <h1>SMOKIN INK TATTOOS</h1>
+    <h2>Book Appointment</h2>
 
-<img src="smokin-ink-logo.jpeg">
-<h1>SMOKIN INK TATTOOS</h1>
+    <form id="bookingForm">
+      <input name="name" placeholder="Full Name" required />
+      <input name="phone" placeholder="Phone" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <select name="service" required>
+        <option value="">Select Tattoo Type</option>
+        <option>Small Tattoo</option>
+        <option>Medium Tattoo</option>
+        <option>Large Tattoo</option>
+        <option>Half Sleeve</option>
+        <option>Full Sleeve</option>
+        <option>Consultation</option>
+        <option>Coverup</option>
+      </select>
+      <input name="date" type="date" required />
+      <select name="time" required>
+        <option value="">Select Time</option>
+        <option>10:00 AM</option>
+        <option>12:00 PM</option>
+        <option>2:00 PM</option>
+        <option>4:00 PM</option>
+        <option>6:00 PM</option>
+      </select>
+      <input name="placement" placeholder="Placement" required />
+      <textarea name="details" placeholder="Tattoo idea..." required></textarea>
+      <button type="submit" id="submitBtn">Submit Booking</button>
+    </form>
 
-<h2>Book Appointment</h2>
+    <p>$30 Deposit • CashApp $SmokinInkTattoos24</p>
+    <div id="notice" class="notice"></div>
+  </div>
 
-<form id="form">
-<input name="name" placeholder="Full Name" required>
-<input name="phone" placeholder="Phone" required>
-<input name="email" placeholder="Email" required>
+  <script>
+    document.getElementById('bookingForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const form = e.target;
+      const btn = document.getElementById('submitBtn');
+      const notice = document.getElementById('notice');
+      const data = Object.fromEntries(new FormData(form).entries());
 
-<input type="date" name="date" required>
-<select name="time">
-<option>12:00 PM</option>
-<option>2:00 PM</option>
-<option>4:00 PM</option>
-</select>
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      notice.style.display = 'none';
+      notice.className = 'notice';
 
-<textarea name="details" placeholder="Tattoo idea..." required></textarea>
+      try {
+        const res = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        });
 
-<button>Submit Booking</button>
-</form>
+        const result = await res.json();
 
-<p>$30 Deposit • CashApp $SmokinInkTattoos24</p>
+        if (!res.ok) {
+          throw new Error(result.error || 'Booking failed');
+        }
 
-<h2>Gallery</h2>
-<div class="gallery">
-<img src="gallery1.jpeg"><img src="gallery2.jpeg"><img src="gallery3.jpeg">
-<img src="gallery4.jpeg"><img src="gallery5.jpeg"><img src="gallery6.jpeg"><img src="gallery7.jpeg">
-</div>
-
-<script>
-document.getElementById('form').addEventListener('submit', async (e)=>{
- e.preventDefault();
- const data = Object.fromEntries(new FormData(e.target));
- await fetch('/api/bookings',{
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
-  body:JSON.stringify(data)
- });
- alert('Booking sent! Check email.');
-});
-</script>
-
+        notice.textContent = 'Booking sent successfully. Check your email inbox and spam.';
+        notice.className = 'notice ok';
+        notice.style.display = 'block';
+        form.reset();
+      } catch (err) {
+        notice.textContent = err.message || 'Something went wrong sending your booking.';
+        notice.className = 'notice err';
+        notice.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Booking';
+      }
+    });
+  </script>
 </body>
 </html>
