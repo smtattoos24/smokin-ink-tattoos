@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMOKIN INK TATTOOS</title>
+<style>
+body{background:#050b07;color:#67ff4e;font-family:sans-serif;text-align:center}
+input,select,textarea{width:90%;padding:10px;margin:8px;border-radius:10px;border:none}
+button{padding:12px 20px;background:#67ff4e;border:none;font-weight:bold;border-radius:20px}
+img{max-width:250px}
+.gallery img{width:100%;max-width:200px;margin:10px}
+</style>
+</head>
+<body>
+
+<img src="smokin-ink-logo.jpeg">
+<h1>SMOKIN INK TATTOOS</h1>
+
+<h2>Book Appointment</h2>
+
+<form id="form">
+<input name="name" placeholder="Full Name" required>
+<input name="phone" placeholder="Phone" required>
+<input name="email" placeholder="Email" required>
+
+<input type="date" name="date" required>
+<select name="time">
+<option>12:00 PM</option>
+<option>2:00 PM</option>
+<option>4:00 PM</option>
+</select>
+
+<textarea name="details" placeholder="Tattoo idea..." required></textarea>
+
+<button>Submit Booking</button>
+</form>
+
+<p>$30 Deposit • CashApp $SmokinInkTattoos24</p>
+
+<h2>Gallery</h2>
+<div class="gallery">
+<img src="gallery1.jpeg"><img src="gallery2.jpeg"><img src="gallery3.jpeg">
+<img src="gallery4.jpeg"><img src="gallery5.jpeg"><img src="gallery6.jpeg"><img src="gallery7.jpeg">
+</div>
+
+<script>
+document.getElementById('form').addEventListener('submit', async (e)=>{
+ e.preventDefault();
+ const data = Object.fromEntries(new FormData(e.target));
+ await fetch('/api/bookings',{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(data)
+ });
+ alert('Booking sent! Check email.');
+});
+</script>
+
+</body>
+</html>
